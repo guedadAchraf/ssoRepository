@@ -5,9 +5,10 @@ import {OAuthModule} from "angular-oauth2-oidc";
 import {provideHttpClient} from "@angular/common/http";
 import {KeycloakAngularModule, KeycloakService} from "keycloak-angular";
 import {KeycloakAuthService} from "./auth/keycloak-auth.service";
+import {firstValueFrom} from "rxjs";
 
-function initializeKeycloak(keycloak: KeycloakAuthService) {
-  return () => keycloak.init();
+function initializeKeycloak(keycloakAuthService: KeycloakAuthService) {
+  return (): Promise<boolean> => firstValueFrom(keycloakAuthService.init());
 }
 
 export const appConfig: ApplicationConfig = {
@@ -18,13 +19,12 @@ export const appConfig: ApplicationConfig = {
     importProvidersFrom(KeycloakAngularModule),
     KeycloakService,
     KeycloakAuthService,
-    importProvidersFrom(KeycloakAngularModule),
+    importProvidersFrom(KeycloakAuthService),
     {
       provide: APP_INITIALIZER,
       useFactory: initializeKeycloak,
-      multi: true,
-      deps: [KeycloakAuthService]
-
+      deps: [KeycloakAuthService],
+      multi: true
     }
   ]
 };

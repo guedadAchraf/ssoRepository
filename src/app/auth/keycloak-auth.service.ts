@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { KeycloakService } from 'keycloak-angular';
 import { KeycloakProfile } from 'keycloak-js';
-import { Observable, from, of } from 'rxjs';
+import {Observable, from, of, tap} from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable({
@@ -60,4 +60,58 @@ export class KeycloakAuthService {
       })
     );
   }
+
+  // Method to log in, generate a token, and store it in local storage
+  public loginAndStoreToken(): Observable<void> {
+    return from(this.keycloak.login()).pipe(
+      tap(async () => {
+        // After successful login, get the token
+        const token = await this.keycloak.getToken();
+        // Store the token in local storage
+        localStorage.setItem('token', token);
+        console.log('Token stored in local storage:', token);
+      }),
+      catchError((error: unknown) => {
+        console.error('Login error:', error);
+        throw error;
+      })
+
+
+    );
+  }
+
+
+
+
+  public getToken(){
+
+    return this.keycloak.getToken();
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }

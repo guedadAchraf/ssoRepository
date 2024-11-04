@@ -1,6 +1,6 @@
 <div>
   <button (click)="login()" *ngIf="!authState.isLoggedIn">Logioon</button>
-  <button (click)="logout()" *ngIf="authState.isLoggedIn">Logout</button>
+  <button (click)="logout()" >Logout</button>
   <div *ngIf="authState.isLoggedIn">
     Welcome, {{ authState.username }}!
   </div>
