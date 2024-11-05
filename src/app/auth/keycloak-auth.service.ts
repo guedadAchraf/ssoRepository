@@ -10,43 +10,51 @@ import { catchError } from 'rxjs/operators';
 export class KeycloakAuthService {
   constructor(private readonly keycloak: KeycloakService) {}
 
-  public init(): Observable<boolean> {
-    return from(this.keycloak.init({
+  public init(): Promise<boolean> {
+    return this.keycloak.init({
       config: {
         url: 'http://localhost:8180',
         realm: 'sso-realm',
-        clientId: 'angular-app-1'
+        clientId: 'angular-app-1',
       },
       initOptions: {
         onLoad: 'check-sso',
-        checkLoginIframe: false
+        checkLoginIframe: false,
       },
-      enableBearerInterceptor: true
-    })).pipe(
-      catchError((error: unknown) => {
-        console.error('Error initializing Keycloak:', error);
-        return of(false);
-      })
+      enableBearerInterceptor: true,
+    }).then(
+      () => true,
+      (error) => {
+        console.error('Keycloak initialization error:', error);
+        return false;
+      }
     );
   }
 
-  public login(): Observable<void> {
+
+ /* public login(): Observable<void> {
     return from(this.keycloak.login()).pipe(
       catchError((error: unknown) => {
         console.error('Login error:', error);
         throw error;
       })
     );
+  }*/
+  public login(): void {
+    this.keycloak.login();
+  }
+  public logout(): void {
+    this.keycloak.logout();
   }
 
-  public logout(): Observable<void> {
+  /*public logout(): Observable<void> {
     return from(this.keycloak.logout()).pipe(
       catchError((error: unknown) => {
         console.error('Logout error:', error);
         throw error;
       })
     );
-  }
+  }*/
 
   public isLoggedIn(): boolean {
     return this.keycloak.isLoggedIn();

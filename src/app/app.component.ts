@@ -40,7 +40,7 @@ export class AppComponent implements OnInit {
   constructor(private authService: KeycloakAuthService) {}
 
   ngOnInit(): void {
-    this.getTokenFromLocalStorage();
+    //this.getTokenFromLocalStorage();
     //console.log(this.getTokenFromLocalStorage());
    // this.updateAuthState();
   }
@@ -53,11 +53,11 @@ export class AppComponent implements OnInit {
   private updateAuthState(): void {
     // Directly use the isLoggedIn method since it returns a boolean
     this.authState.isLoggedIn = this.authService.isLoggedIn();
-    if (this.authState.isLoggedIn) {
+    if (this.authState.isLoggedIn==true ) {
       this.loadUserProfile(); // Load the user profile if logged in
     }
 
-    if(this.authService.isLoggedIn()) {
+    if(this.loadUserProfile()) {
       window.location.href = 'http://localhost:4202';
     }
     }
@@ -81,37 +81,16 @@ export class AppComponent implements OnInit {
   }
 
   // In your KeycloakAuthService
-  async login(): Promise<void> {
-    try {
-      // Wait for the login process to complete
-      await this.authService.loginAndStoreToken().toPromise();
-
-      // Update auth state after login
-      this.updateAuthState();
-
-      // Load the user profile and token asynchronously
-      const userProfile = await this.loadUserProfile();
-      const token = await this.authService.getToken() ;
-        // Store credentials in local storage
-      localStorage.setItem('user_profile', JSON.stringify(userProfile));
-      localStorage.setItem('token', token);
-      window.location.href = 'http://localhost:4202';
-    } catch (error) {
-      this.handleError(error, 'Login failed');
+    public login(){
+    this.authService.login();
     }
-  }
-
-
-    logout(): void {
-    this.authService.logout().subscribe(
-      () => {
-        this.authState = {
-          isLoggedIn: false,
-          username: ''
-        };
-      },
-      (error) => this.handleError(error, 'Logout failed')
-    );
+  public async logout(): Promise<void> {
+    try {
+      await this.authService.logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+      throw error;
+    }
   }
 
   private handleError(error: unknown, defaultMessage: string): void {

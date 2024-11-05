@@ -2,7 +2,7 @@ import {AuthConfig} from "angular-oauth2-oidc";
 
 export const authConfig: AuthConfig = {
   issuer: 'http://localhost:8180/realms/sso-realm',
-  clientId: 'angular-app-1',
+  clientId: 'app-frondend',
   responseType: 'code',
   scope: 'openid profile email',
   requireHttps: false, // Set to true in production

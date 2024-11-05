@@ -7,24 +7,27 @@ import {KeycloakAngularModule, KeycloakService} from "keycloak-angular";
 import {KeycloakAuthService} from "./auth/keycloak-auth.service";
 import {firstValueFrom} from "rxjs";
 
-function initializeKeycloak(keycloakAuthService: KeycloakAuthService) {
-  return (): Promise<boolean> => firstValueFrom(keycloakAuthService.init());
+
+
+function initializeKeycloak(keycloak: KeycloakAuthService) {
+  return () => keycloak.init();
 }
 
 export const appConfig: ApplicationConfig = {
   providers: [provideRouter(routes),
 
     importProvidersFrom(
-    OAuthModule.forRoot()), provideHttpClient(),
+      OAuthModule.forRoot()), provideHttpClient(),
     importProvidersFrom(KeycloakAngularModule),
     KeycloakService,
     KeycloakAuthService,
-    importProvidersFrom(KeycloakAuthService),
+    importProvidersFrom(KeycloakAngularModule),
     {
       provide: APP_INITIALIZER,
       useFactory: initializeKeycloak,
-      deps: [KeycloakAuthService],
-      multi: true
+      multi: true,
+      deps: [KeycloakAuthService]
+
     }
   ]
 };
